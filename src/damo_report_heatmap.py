@@ -111,15 +111,15 @@ class HeatMap:
         if df_passed:
             heat_val = heat_val * region.sz_filter_passed / region.size()
 
-        heat = heat_val * account_time * account_sz
+        # Sum sub-region frequencies instead of space-weighted average:
+        # each sub-region contributes its full hz regardless of spatial size.
+        heat = heat_val * account_time
 
         if pixel.heat is None:
             pixel.heat = 0
 
-        pixel_time_space = self.time_unit * self.addr_unit
-
-        heat += pixel.heat * pixel_time_space
-        pixel.heat = float(heat) / pixel_time_space
+        heat += pixel.heat * self.time_unit
+        pixel.heat = float(heat) / self.time_unit
 
     def pixels_idxs_range(self, region, snapshot, last_snapshot, aggr_ns):
         start_time = snapshot.start_time
